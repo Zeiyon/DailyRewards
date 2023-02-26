@@ -1,0 +1,38 @@
+#The following options are for the main dailyrewards menu only
+#You can edit the GUI size, name, items, item-lore and more. If you would like more customizability, please contact Zeiyon.
+Main_Menu_Title: "&cDailyRewards Main Menu"
+Main_Menu_Size: 27
+
+All_Rewards_Item:
+  Slot: 11
+  Material: "DIAMOND"
+  Name: "AllRewardsss"
+  Lore:
+    - "&cThese are all the rewards"
+    - "And another line"
+  On-Click-Message: "This is a message in chat"
+
+
+Daily_Item:
+  Slot: 13
+  Material: "COAL"
+  Name: "&aDailyRewards"
+  Lore:
+    - "&2Claim Your Daily Reward"
+    - "Click Here to Claim"
+    - "&c:)"
+  On-Click-Message: "&9This is a test message"
+
+#Choose to enable or disable weekly rewards
+#If disabled, you can ignore the whole field for the monthly rewards as it won't show up
+Weekly: true
+
+Weekly_Item:
+  Slot: 15
+  Material: "COAL"
+  Name: "&aDailyRewards"
+  Lore:
+    - "&2Claim Your Daily Reward"
+    - "Click Here to Claim"
+    - "&c:)"
+  On-Click-Message: "&9This is a test message"

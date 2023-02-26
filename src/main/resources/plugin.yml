@@ -1,0 +1,11 @@
+name: Dailyrewards
+version: '${project.version}'
+main: com.zeiyon.dailyrewards.Main
+api-version: 1.19
+authors: [ Zeiyon ]
+description: A dailyrewards/bonus plugin
+commands:
+  dailyrewards:
+    description: The main dailyrewads command that opens the menu
+  test:
+
