@@ -34,6 +34,7 @@ public class AllRewardsMenu extends Menu{
 
         for (ItemStack item : Main.getPlugin().test.getItemsArray()) {
             inventory.addItem(item);
+            System.out.println("Test");
         }
 
     }
