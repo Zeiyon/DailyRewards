@@ -16,11 +16,11 @@ public class TestCommand implements CommandExecutor {
             player.sendMessage(ChatColor.RED+"You need to specify the name of the item! The name can't have any spaces!");
             return false;
         }
-        if(Main.getPlugin().test.getItem(args[0]) == null){
+        if(Main.getPlugin().rewardsLoader.getItem(args[0]) == null){
             player.sendMessage(ChatColor.RED+"The specified item couldn't be found!");
             return false;
         }else {
-            player.getInventory().addItem(Main.getPlugin().test.getItem(args[0]));
+            player.getInventory().addItem(Main.getPlugin().rewardsLoader.getItem(args[0]));
             player.sendMessage(ChatColor.GREEN+"Gave you the item!");
         }
 

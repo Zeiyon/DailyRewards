@@ -30,7 +30,7 @@ public class RewardsFile {
         fileConfig = YamlConfiguration.loadConfiguration(file);
     }
 
-    //Getter for the Bukkit rewards.ynl config
+    //Getter for the Bukkit rewards.yml config
     public static FileConfiguration get() {
         return fileConfig;
     }

@@ -1,5 +1,7 @@
 package com.zeiyon.dailyrewards.menus;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.zeiyon.dailyrewards.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -9,10 +11,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
-public class DailyRewardsMenu extends Menu{
+public class MainMenu extends Menu {
 
-    public DailyRewardsMenu(PlayerMenuUtility playerMenuUtility) {
+    void test() {
+        System.out.println("test");
+    }
+
+    public MainMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
     }
 
@@ -38,9 +46,21 @@ public class DailyRewardsMenu extends Menu{
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getPlugin().getConfig().getString("Daily_Item.On-Click-Message")));
 
 
+
                 //If clicked on Daily_Item
             } else if (e.getCurrentItem().getType() == Material.matchMaterial(Main.getPlugin().getConfig().getString("Daily_Item.Material"))) {
-                p.sendMessage("Claiming Daily Reward");
+
+                if (!Main.getCooldown().asMap().containsKey(p.getUniqueId())) {
+                    p.sendMessage("Claiming Daily Reward");
+                    //Gets random int between 0 and the max amount of rewards and gives the player the reward corresponding with that item.
+                    int rand = (int) (Math.random() * Main.getPlugin().rewardsLoader.getItemsArray().size());
+                    p.getInventory().addItem(Main.getPlugin().rewardsLoader.getItemsArray().get(rand));
+                    Main.getCooldown().put(p.getUniqueId(), System.currentTimeMillis() + 20000);
+                } else {
+                    long remaining = (long)Main.getCooldown().asMap().get(p.getUniqueId()) - System.currentTimeMillis();
+                    p.sendMessage("Must wait " + (int)(remaining/1000) + " Hours");
+
+                }
                 p.closeInventory();
 
 

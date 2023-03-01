@@ -3,6 +3,7 @@ package com.zeiyon.dailyrewards.menus;
 import com.zeiyon.dailyrewards.Main;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 
@@ -30,11 +31,8 @@ public class AllRewardsMenu extends Menu{
     @Override
     public void setMenuItems() {
 
-        ArrayList<ItemStack> itemsArray = Main.getPlugin().test.getItemsArray();
-
-        for (ItemStack item : Main.getPlugin().test.getItemsArray()) {
+        for (ItemStack item : Main.getPlugin().rewardsLoader.getItemsArray()) {
             inventory.addItem(item);
-            System.out.println("Test");
         }
 
     }
