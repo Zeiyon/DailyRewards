@@ -12,10 +12,12 @@ All_Rewards_Item:
     - "And another line"
   On-Click-Message: "This is a message in chat"
 
+All_Rewards_Menu:
+  Size: 9
 
 Daily_Item:
   Slot: 13
-  Material: "COAL"
+  Material: "EMERALD"
   Name: "&aDailyRewards"
   Lore:
     - "&2Claim Your Daily Reward"
@@ -29,7 +31,7 @@ Weekly: true
 
 Weekly_Item:
   Slot: 15
-  Material: "COAL"
+  Material: "NETHERITE"
   Name: "&aDailyRewards"
   Lore:
     - "&2Claim Your Daily Reward"

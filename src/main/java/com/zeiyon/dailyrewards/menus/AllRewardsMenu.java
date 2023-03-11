@@ -20,7 +20,7 @@ public class AllRewardsMenu extends Menu{
 
     @Override
     public int getSlots() {
-        return 54;
+        return Integer.valueOf(Main.getPlugin().getConfig().getString("All_Rewards_Menu.Size"));
     }
 
     @Override

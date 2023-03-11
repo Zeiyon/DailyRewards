@@ -4,13 +4,13 @@ import org.bukkit.entity.Player;
 
 public class PlayerMenuUtility {
 
-    private Player owner;
+    private static Player owner;
 
     public PlayerMenuUtility(Player owner) {
         this.owner = owner;
     }
 
-    public Player getOwner() {
+    public static Player getOwner() {
         return owner;
     }
 

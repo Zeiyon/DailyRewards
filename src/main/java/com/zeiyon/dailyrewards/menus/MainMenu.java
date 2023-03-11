@@ -1,7 +1,6 @@
 package com.zeiyon.dailyrewards.menus;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.zeiyon.dailyrewards.Cooldowns;
 import com.zeiyon.dailyrewards.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -11,14 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class MainMenu extends Menu {
-
-    void test() {
-        System.out.println("test");
-    }
+    private Cooldowns cooldown = Main.cooldown;
 
     public MainMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
@@ -37,9 +31,9 @@ public class MainMenu extends Menu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
-
-        //If clicked on All_Rewards_Item
         if (e.getCurrentItem().getType() != null && e.getCurrentItem().getType() != Material.AIR) {
+
+            //If clicked on All_Rewards_Item
             if (e.getCurrentItem().getType() == Material.matchMaterial(Main.getPlugin().getConfig().getString("All_Rewards_Item.Material"))) {
                 AllRewardsMenu menu = new AllRewardsMenu(Main.getPlayerMenUtility(p));
                 menu.open();
@@ -47,21 +41,21 @@ public class MainMenu extends Menu {
 
 
 
-                //If clicked on Daily_Item
+            //If clicked on Daily_Item
             } else if (e.getCurrentItem().getType() == Material.matchMaterial(Main.getPlugin().getConfig().getString("Daily_Item.Material"))) {
 
-                if (!Main.getCooldown().asMap().containsKey(p.getUniqueId())) {
+                if (!cooldown.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
                     p.sendMessage("Claiming Daily Reward");
                     //Gets random int between 0 and the max amount of rewards and gives the player the reward corresponding with that item.
                     int rand = (int) (Math.random() * Main.getPlugin().rewardsLoader.getItemsArray().size());
                     p.getInventory().addItem(Main.getPlugin().rewardsLoader.getItemsArray().get(rand));
-                    Main.getCooldown().put(p.getUniqueId(), System.currentTimeMillis() + 20000);
+                    cooldown.getDailyCooldown().put(p.getUniqueId(), System.currentTimeMillis() + Cooldowns.amountDaily);
                 } else {
-                    long remaining = (long)Main.getCooldown().asMap().get(p.getUniqueId()) - System.currentTimeMillis();
-                    p.sendMessage("Must wait " + (int)(remaining/1000) + " Hours");
+                    p.sendMessage("Must wait " + cooldown.dailyHoursRemaining(p) + " hours & " + cooldown.dailyMinutesRemaining(p) + " minutes");
 
                 }
                 p.closeInventory();
+
 
 
                 //If clicked on Weekly_Item
@@ -75,6 +69,7 @@ public class MainMenu extends Menu {
 
     @Override
     public void setMenuItems() {
+        Player p = PlayerMenuUtility.getOwner();
 
         //All Rewards Item
         ItemStack rewards = new ItemStack(Material.matchMaterial(Main.getPlugin().getConfig().getString("All_Rewards_Item.Material")));
@@ -98,6 +93,12 @@ public class MainMenu extends Menu {
         //Iterates over the lore for Item in config and adds it to the lore ArrayList
         for (int i = 0; i < Main.getPlugin().getConfig().getStringList("Daily_Item.Lore").size(); i++) {
             dailyLore.add(ChatColor.translateAlternateColorCodes('&', Main.getPlugin().getConfig().getStringList("Daily_Item.Lore").get(i)));
+        }
+        if (!cooldown.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
+            dailyLore.add("&f&lRewards Available");
+        } else if (cooldown.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
+            dailyLore.add("&c&lRewards Not Available");
+            dailyLore.add("Time Remaining" + cooldown.dailyHoursRemaining(p) + " hours & " + cooldown.dailyMinutesRemaining(p) + " minutes");
         }
         dailyMeta.setLore(dailyLore);
         daily.setItemMeta(dailyMeta);
