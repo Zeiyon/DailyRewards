@@ -12,7 +12,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 
 public class MainMenu extends Menu {
-    private Cooldowns cooldown = Main.cooldown;
 
     public MainMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
@@ -44,15 +43,33 @@ public class MainMenu extends Menu {
             //If clicked on Daily_Item
             } else if (e.getCurrentItem().getType() == Material.matchMaterial(Main.getPlugin().getConfig().getString("Daily_Item.Material"))) {
 
-                if (!cooldown.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
+                if (!Cooldowns.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
                     p.sendMessage("Claiming Daily Reward");
-                    //Gets random int between 0 and the max amount of rewards and gives the player the reward corresponding with that item.
-                    int rand = (int) (Math.random() * Main.getPlugin().rewardsLoader.getItemsArray().size());
-                    p.getInventory().addItem(Main.getPlugin().rewardsLoader.getItemsArray().get(rand));
-                    cooldown.getDailyCooldown().put(p.getUniqueId(), System.currentTimeMillis() + Cooldowns.amountDaily);
-                } else {
-                    p.sendMessage("Must wait " + cooldown.dailyHoursRemaining(p) + " hours & " + cooldown.dailyMinutesRemaining(p) + " minutes");
 
+                    //Check if cumulative rewards is enabled or disabled.
+                    if (Main.getPlugin().getConfig().getBoolean("Cumulative_Rewards")) {
+                        //cumulative rewards are enabled.
+                        if (Main.streak.containsKey(p.getUniqueId())) {
+                            if (Main.streak.get(p.getUniqueId()) >= Main.getPlugin().rewardsLoader.getItemsArray().size() - 1) {
+                                Main.streak.put(p.getUniqueId(), 0);
+                                p.getInventory().addItem(Main.getPlugin().rewardsLoader.getItemsArray().get(0));
+                            } else {
+                                Main.streak.put(p.getUniqueId(), Main.streak.get(p.getUniqueId()) + 1);
+                                p.getInventory().addItem(Main.getPlugin().rewardsLoader.getItemsArray().get(Main.streak.get(p.getUniqueId())));
+                            }
+                        } else {
+                            Main.streak.put(p.getUniqueId(), 0);
+                            p.getInventory().addItem(Main.getPlugin().rewardsLoader.getItemsArray().get(0));
+                        }
+                    } else {
+                        //cumulative rewards is disabled
+                        //Gets random int between 0 and the max amount of rewards and gives the player the reward corresponding with that item.
+                        int rand = (int) (Math.random() * Main.getPlugin().rewardsLoader.getItemsArray().size());
+                        p.getInventory().addItem(Main.getPlugin().rewardsLoader.getItemsArray().get(rand));
+                        Cooldowns.getDailyCooldown().put(p.getUniqueId(), System.currentTimeMillis() + Cooldowns.amountDaily);
+                    }
+                } else {
+                    p.sendMessage("Must wait " + Cooldowns.dailyHoursRemaining(p) + " hours & " + Cooldowns.dailyMinutesRemaining(p) + " minutes");
                 }
                 p.closeInventory();
 
@@ -94,11 +111,11 @@ public class MainMenu extends Menu {
         for (int i = 0; i < Main.getPlugin().getConfig().getStringList("Daily_Item.Lore").size(); i++) {
             dailyLore.add(ChatColor.translateAlternateColorCodes('&', Main.getPlugin().getConfig().getStringList("Daily_Item.Lore").get(i)));
         }
-        if (!cooldown.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
+        if (!Cooldowns.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
             dailyLore.add("&f&lRewards Available");
-        } else if (cooldown.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
+        } else if (Cooldowns.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
             dailyLore.add("&c&lRewards Not Available");
-            dailyLore.add("Time Remaining" + cooldown.dailyHoursRemaining(p) + " hours & " + cooldown.dailyMinutesRemaining(p) + " minutes");
+            dailyLore.add("Time Remaining" + Cooldowns.dailyHoursRemaining(p) + " hours & " + Cooldowns.dailyMinutesRemaining(p) + " minutes");
         }
         dailyMeta.setLore(dailyLore);
         daily.setItemMeta(dailyMeta);

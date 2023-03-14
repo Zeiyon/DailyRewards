@@ -3,6 +3,11 @@
 Main_Menu_Title: "&cDailyRewards Main Menu"
 Main_Menu_Size: 27
 
+All_Rewards_Menu:
+  Size: 9
+
+Cumulative_Rewards: true
+
 All_Rewards_Item:
   Slot: 11
   Material: "DIAMOND"
@@ -11,9 +16,6 @@ All_Rewards_Item:
     - "&cThese are all the rewards"
     - "And another line"
   On-Click-Message: "This is a message in chat"
-
-All_Rewards_Menu:
-  Size: 9
 
 Daily_Item:
   Slot: 13
@@ -31,7 +33,7 @@ Weekly: true
 
 Weekly_Item:
   Slot: 15
-  Material: "NETHERITE"
+  Material: "COAL"
   Name: "&aDailyRewards"
   Lore:
     - "&2Claim Your Daily Reward"

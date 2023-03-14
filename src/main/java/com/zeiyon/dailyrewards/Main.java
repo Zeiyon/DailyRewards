@@ -9,12 +9,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public final class Main extends JavaPlugin {
 
-    public static Cooldowns cooldown = new Cooldowns();
     private static Main plugin;
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<Player, PlayerMenuUtility>();
+    public static final HashMap<UUID, Integer> streak = new HashMap<>();
     public RewardsLoader rewardsLoader;
 
     @Override
