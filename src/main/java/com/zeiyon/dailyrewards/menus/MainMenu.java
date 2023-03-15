@@ -1,7 +1,8 @@
 package com.zeiyon.dailyrewards.menus;
 
-import com.zeiyon.dailyrewards.Cooldowns;
+import com.zeiyon.dailyrewards.managers.CooldownsManager;
 import com.zeiyon.dailyrewards.Main;
+import com.zeiyon.dailyrewards.managers.RewardsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,7 +20,9 @@ public class MainMenu extends Menu {
 
     @Override
     public String getMenuName() {
-        return ChatColor.translateAlternateColorCodes('&', Main.getPlugin().getConfig().getString("Main_Menu_Title"));
+        if (Main.getPlugin().getConfig().getString("Main_Menu_Title") != null) {
+            return ChatColor.translateAlternateColorCodes('&', Main.getPlugin().getConfig().getString("Main_Menu_Title"));
+        } else return "DailyRewards Menu";
     }
 
     @Override
@@ -34,7 +37,7 @@ public class MainMenu extends Menu {
 
             //If clicked on All_Rewards_Item
             if (e.getCurrentItem().getType() == Material.matchMaterial(Main.getPlugin().getConfig().getString("All_Rewards_Item.Material"))) {
-                AllRewardsMenu menu = new AllRewardsMenu(Main.getPlayerMenUtility(p));
+                RewardsMenu menu = new RewardsMenu(Main.getPlayerMenUtility(p));
                 menu.open();
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getPlugin().getConfig().getString("Daily_Item.On-Click-Message")));
 
@@ -42,35 +45,7 @@ public class MainMenu extends Menu {
 
             //If clicked on Daily_Item
             } else if (e.getCurrentItem().getType() == Material.matchMaterial(Main.getPlugin().getConfig().getString("Daily_Item.Material"))) {
-
-                if (!Cooldowns.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
-                    p.sendMessage("Claiming Daily Reward");
-
-                    //Check if cumulative rewards is enabled or disabled.
-                    if (Main.getPlugin().getConfig().getBoolean("Cumulative_Rewards")) {
-                        //cumulative rewards are enabled.
-                        if (Main.streak.containsKey(p.getUniqueId())) {
-                            if (Main.streak.get(p.getUniqueId()) >= Main.getPlugin().rewardsLoader.getItemsArray().size() - 1) {
-                                Main.streak.put(p.getUniqueId(), 0);
-                                p.getInventory().addItem(Main.getPlugin().rewardsLoader.getItemsArray().get(0));
-                            } else {
-                                Main.streak.put(p.getUniqueId(), Main.streak.get(p.getUniqueId()) + 1);
-                                p.getInventory().addItem(Main.getPlugin().rewardsLoader.getItemsArray().get(Main.streak.get(p.getUniqueId())));
-                            }
-                        } else {
-                            Main.streak.put(p.getUniqueId(), 0);
-                            p.getInventory().addItem(Main.getPlugin().rewardsLoader.getItemsArray().get(0));
-                        }
-                    } else {
-                        //cumulative rewards is disabled
-                        //Gets random int between 0 and the max amount of rewards and gives the player the reward corresponding with that item.
-                        int rand = (int) (Math.random() * Main.getPlugin().rewardsLoader.getItemsArray().size());
-                        p.getInventory().addItem(Main.getPlugin().rewardsLoader.getItemsArray().get(rand));
-                        Cooldowns.getDailyCooldown().put(p.getUniqueId(), System.currentTimeMillis() + Cooldowns.amountDaily);
-                    }
-                } else {
-                    p.sendMessage("Must wait " + Cooldowns.dailyHoursRemaining(p) + " hours & " + Cooldowns.dailyMinutesRemaining(p) + " minutes");
-                }
+                RewardsManager.claimDailyReward(p);
                 p.closeInventory();
 
 
@@ -88,7 +63,7 @@ public class MainMenu extends Menu {
     public void setMenuItems() {
         Player p = PlayerMenuUtility.getOwner();
 
-        //All Rewards Item
+        //Rewards Item
         ItemStack rewards = new ItemStack(Material.matchMaterial(Main.getPlugin().getConfig().getString("All_Rewards_Item.Material")));
         ItemMeta rewardsMeta = rewards.getItemMeta();
         rewardsMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Main.getPlugin().getConfig().getString("All_Rewards_Item.Name")));
@@ -111,11 +86,11 @@ public class MainMenu extends Menu {
         for (int i = 0; i < Main.getPlugin().getConfig().getStringList("Daily_Item.Lore").size(); i++) {
             dailyLore.add(ChatColor.translateAlternateColorCodes('&', Main.getPlugin().getConfig().getStringList("Daily_Item.Lore").get(i)));
         }
-        if (!Cooldowns.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
+        if (!CooldownsManager.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
             dailyLore.add("&f&lRewards Available");
-        } else if (Cooldowns.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
+        } else if (CooldownsManager.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
             dailyLore.add("&c&lRewards Not Available");
-            dailyLore.add("Time Remaining" + Cooldowns.dailyHoursRemaining(p) + " hours & " + Cooldowns.dailyMinutesRemaining(p) + " minutes");
+            dailyLore.add("Time Remaining" + CooldownsManager.dailyHoursRemaining(p) + " hours & " + CooldownsManager.dailyMinutesRemaining(p) + " minutes");
         }
         dailyMeta.setLore(dailyLore);
         daily.setItemMeta(dailyMeta);

@@ -6,7 +6,6 @@ authors: [ Zeiyon ]
 description: A dailyrewards/bonus plugin
 commands:
   dailyrewards:
-    description: The main dailyrewards command that opens the menu
+    description: The main dailyrewards command that opens the main menu
     aliases: dr
-  test:
 

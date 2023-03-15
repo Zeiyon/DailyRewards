@@ -1,8 +1,10 @@
-package com.zeiyon.dailyrewards;
+package com.zeiyon.dailyrewards.managers;
 
+import com.zeiyon.dailyrewards.Main;
 import com.zeiyon.dailyrewards.files.RewardsFile;
-import com.zeiyon.dailyrewards.menus.AllRewardsMenu;
+import com.zeiyon.dailyrewards.menus.RewardsMenu;
 import com.zeiyon.dailyrewards.menus.MainMenu;
+import com.zeiyon.dailyrewards.menus.WeeklyRewardsMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,7 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-public class Commands implements CommandExecutor {
+public class CommandsManager implements CommandExecutor {
 
 
     @Override
@@ -46,22 +48,22 @@ public class Commands implements CommandExecutor {
             //Claim Argument
             if (args[0].equalsIgnoreCase("claim") && sender instanceof Player) {
                 Player p = (Player) sender;
-                if (!Cooldowns.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
-                    p.sendMessage("Claiming Daily Reward");
-                    //Gets random int between 0 and the max amount of rewards and gives the player the reward corresponding with that item.
-                    int rand = (int) (Math.random() * Main.getPlugin().rewardsLoader.getItemsArray().size());
-                    p.getInventory().addItem(Main.getPlugin().rewardsLoader.getItemsArray().get(rand));
-                    Cooldowns.getDailyCooldown().put(p.getUniqueId(), System.currentTimeMillis() + Cooldowns.amountDaily);
-                } else {
-                    p.sendMessage("Must wait " + Cooldowns.dailyHoursRemaining(p) + " hours & " + Cooldowns.dailyMinutesRemaining(p) + " minutes");
-                }
+                RewardsManager.claimDailyReward(p);
             }
 
 
             //Rewards Argument
             if ((args[0].equalsIgnoreCase("reward") || args[0].equalsIgnoreCase("rewards")) && sender instanceof Player) {
                 Player p = (Player) sender;
-                AllRewardsMenu menu = new AllRewardsMenu(Main.getPlayerMenUtility(p));
+                RewardsMenu menu = new RewardsMenu(Main.getPlayerMenUtility(p));
+                menu.open();
+            }
+
+
+            //Weekly-Rewards Argument
+            if ((args[0].equalsIgnoreCase("weeklyreward") || args[0].equalsIgnoreCase("weeklyrewards")) && sender instanceof Player) {
+                Player p = (Player) sender;
+                WeeklyRewardsMenu menu = new WeeklyRewardsMenu(Main.getPlayerMenUtility(p));
                 menu.open();
             }
 
@@ -84,9 +86,9 @@ public class Commands implements CommandExecutor {
                             try {
                                 Integer.parseInt(args[2]);
                                 if (args[0].equalsIgnoreCase("addTime")) {
-                                    addTime(sender, argPlayer, Integer.valueOf(args[2]) * 1000);
+                                    addTime(sender, argPlayer, Integer.parseInt(args[2]) * 1000);
                                 } else if (args[0].equalsIgnoreCase("removeTime")) {
-                                    removeTime(sender, argPlayer, Integer.valueOf(args[2]) * 1000);
+                                    removeTime(sender, argPlayer, Integer.parseInt(args[2]) * 1000);
                                 }
                             } catch (final NumberFormatException e) {
                                 sender.sendMessage("Please enter a valid number.");
@@ -109,8 +111,8 @@ public class Commands implements CommandExecutor {
                             sender.sendMessage("usage: /dr reset {user}");
                         } else {
                             Player argPlayer = Bukkit.getPlayer(potentialPlayer);
-                            if (Cooldowns.getDailyCooldown().asMap().containsKey(argPlayer.getUniqueId())) {
-                                Cooldowns.getDailyCooldown().asMap().remove(argPlayer.getUniqueId());
+                            if (CooldownsManager.getDailyCooldown().asMap().containsKey(argPlayer.getUniqueId())) {
+                                CooldownsManager.getDailyCooldown().asMap().remove(argPlayer.getUniqueId());
                                 sender.sendMessage(argPlayer.getDisplayName() + "'s reward has been reset.");
                             } else
                                 sender.sendMessage(argPlayer.getDisplayName() + "'s reward is currently available to claim.");
@@ -131,8 +133,8 @@ public class Commands implements CommandExecutor {
                             sender.sendMessage("usage: /dr viewTime {user}");
                         } else {
                             Player argPlayer = Bukkit.getPlayer(potentialPlayer);
-                            if (Cooldowns.getDailyCooldown().asMap().containsKey(argPlayer.getUniqueId())) {
-                                sender.sendMessage(argPlayer.getDisplayName() + "'s remaining time is " + Cooldowns.dailyHoursRemaining(argPlayer) + " Hours " + Cooldowns.dailyMinutesRemaining(argPlayer) + " Minutes.");
+                            if (CooldownsManager.getDailyCooldown().asMap().containsKey(argPlayer.getUniqueId())) {
+                                sender.sendMessage(argPlayer.getDisplayName() + "'s remaining time is " + CooldownsManager.dailyHoursRemaining(argPlayer) + " Hours " + CooldownsManager.dailyMinutesRemaining(argPlayer) + " Minutes.");
                             } else
                                 sender.sendMessage(argPlayer.getDisplayName() + "'s reward is currently available to claim.");
                         }
@@ -153,13 +155,13 @@ public class Commands implements CommandExecutor {
 
 
     private void addTime(CommandSender sender, Player argPlayer, Integer delay) {
-        if (Cooldowns.getDailyCooldown().asMap().containsKey(argPlayer.getUniqueId()) && delay > 0) {
-            long temp = (long) Cooldowns.getDailyCooldown().asMap().get(argPlayer.getUniqueId()) - System.currentTimeMillis();
-            Cooldowns.getDailyCooldown().asMap().remove(argPlayer.getUniqueId());
-            Cooldowns.getDailyCooldown().asMap().put(argPlayer.getUniqueId(), System.currentTimeMillis() + temp + delay);
+        if (CooldownsManager.getDailyCooldown().asMap().containsKey(argPlayer.getUniqueId()) && delay > 0) {
+            long temp = (long) CooldownsManager.getDailyCooldown().asMap().get(argPlayer.getUniqueId()) - System.currentTimeMillis();
+            CooldownsManager.getDailyCooldown().asMap().remove(argPlayer.getUniqueId());
+            CooldownsManager.getDailyCooldown().asMap().put(argPlayer.getUniqueId(), System.currentTimeMillis() + temp + delay);
             sender.sendMessage(argPlayer.getDisplayName() + "'s delay has been increased by " + delay/1000 + " seconds.");
         } else if (delay > 0){
-            Cooldowns.getDailyCooldown().asMap().put(argPlayer.getUniqueId(), System.currentTimeMillis() + delay);
+            CooldownsManager.getDailyCooldown().asMap().put(argPlayer.getUniqueId(), System.currentTimeMillis() + delay);
             sender.sendMessage(argPlayer.getDisplayName() + "'s delay has been increased by " + delay/1000 + " seconds.");
         } else if (delay <=0) {
             sender.sendMessage("Please enter a positive integer value.");
@@ -167,10 +169,10 @@ public class Commands implements CommandExecutor {
     }
 
     private void removeTime(CommandSender sender, Player argPlayer, Integer delay) {
-        if (Cooldowns.getDailyCooldown().asMap().containsKey(argPlayer.getUniqueId())) {
-            long temp = (long) Cooldowns.getDailyCooldown().asMap().get(argPlayer.getUniqueId()) - System.currentTimeMillis();
-            Cooldowns.getDailyCooldown().asMap().remove(argPlayer.getUniqueId());
-            Cooldowns.getDailyCooldown().asMap().put(argPlayer.getUniqueId(), System.currentTimeMillis() + temp - delay);
+        if (CooldownsManager.getDailyCooldown().asMap().containsKey(argPlayer.getUniqueId())) {
+            long temp = (long) CooldownsManager.getDailyCooldown().asMap().get(argPlayer.getUniqueId()) - System.currentTimeMillis();
+            CooldownsManager.getDailyCooldown().asMap().remove(argPlayer.getUniqueId());
+            CooldownsManager.getDailyCooldown().asMap().put(argPlayer.getUniqueId(), System.currentTimeMillis() + temp - delay);
             sender.sendMessage(argPlayer.getDisplayName() + "'s delay has been decreased by " + delay/1000 + " seconds.");
         } else sender.sendMessage("Player has not yet claimed their Daily Reward");
     }

@@ -16,7 +16,8 @@ public class RewardsLoader {
     private final HashMap<String, ItemStack> customItems;
     private final Main main;
 
-    ArrayList<ItemStack> itemsArray = new ArrayList<>();
+    ArrayList<ItemStack> dailyItemsArray = new ArrayList<>();
+    ArrayList<ItemStack> weeklyItemsArray = new ArrayList<>();
 
     public RewardsLoader(Main main) {
         this.main = main;
@@ -49,12 +50,16 @@ public class RewardsLoader {
                 for(String lore : config.getStringList(itemPath+".meta.lore")){
                     loreList.add(ChatColor.translateAlternateColorCodes('&', lore));
                 }
+                loreList.add("");
                 itemMeta.setLore(loreList);
                 itemMeta.setUnbreakable(config.getBoolean(itemPath+".meta.unbreakable"));
                 itemStack.setItemMeta(itemMeta);
             }
             customItems.put(itemStackFromConfigName, itemStack);
-            itemsArray.add(itemStack);
+
+            if (config.getBoolean(itemPath + ".weekly")) {
+                weeklyItemsArray.add(itemStack);
+            } else dailyItemsArray.add(itemStack);
         }
     }
 
@@ -63,7 +68,11 @@ public class RewardsLoader {
         return customItems.get(name);
     }
 
-    public ArrayList<ItemStack> getItemsArray() {
-        return itemsArray;
+    public ArrayList<ItemStack> getDailyItemsArray() {
+        return dailyItemsArray;
+    }
+
+    public ArrayList<ItemStack> getWeeklyItemsArray() {
+        return weeklyItemsArray;
     }
 }

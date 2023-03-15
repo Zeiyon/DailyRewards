@@ -1,4 +1,4 @@
-package com.zeiyon.dailyrewards;
+package com.zeiyon.dailyrewards.managers;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -7,7 +7,8 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class Cooldowns {
+public class CooldownsManager {
+
     //Cooldowns for Daily Rewards
     public static int amountDaily = 86400000;
 
@@ -18,10 +19,10 @@ public class Cooldowns {
     }
     
     public static long dailyHoursRemaining(Player p) {
-        return ((long) dailyCooldown.asMap().get(p.getUniqueId()) - System.currentTimeMillis())/1000/3600;
+        return (dailyCooldown.asMap().get(p.getUniqueId()) - System.currentTimeMillis())/1000/3600;
     }
     public static long dailyMinutesRemaining(Player p) {
-        return (((long) dailyCooldown.asMap().get(p.getUniqueId()) - System.currentTimeMillis())/1000 - Cooldowns.dailyHoursRemaining(p)*3600)/60;
+        return ((dailyCooldown.asMap().get(p.getUniqueId()) - System.currentTimeMillis())/1000 - CooldownsManager.dailyHoursRemaining(p)*3600)/60;
     }
 
 
@@ -35,9 +36,9 @@ public class Cooldowns {
         return weeklyCooldown;
     }
     public static long weeklyHoursRemaining(Player p) {
-        return ((long) weeklyCooldown.asMap().get(p.getUniqueId()) - System.currentTimeMillis())/1000/3600;
+        return (weeklyCooldown.asMap().get(p.getUniqueId()) - System.currentTimeMillis())/1000/3600;
     }
     public static long weeklyMinutesRemaining(Player p) {
-        return (((long) weeklyCooldown.asMap().get(p.getUniqueId()) - System.currentTimeMillis())/1000 - Cooldowns.weeklyHoursRemaining(p)*3600)/60;
+        return ((weeklyCooldown.asMap().get(p.getUniqueId()) - System.currentTimeMillis())/1000 - CooldownsManager.weeklyHoursRemaining(p)*3600)/60;
     }
 }

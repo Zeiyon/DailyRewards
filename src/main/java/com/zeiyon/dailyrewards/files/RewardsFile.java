@@ -8,7 +8,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class RewardsFile {
 
@@ -28,6 +30,27 @@ public class RewardsFile {
         }
         //Sets the file java object as a configurable Bukkit object
         fileConfig = YamlConfiguration.loadConfiguration(file);
+
+        //Add two example items to the rewards file
+        fileConfig.options().copyDefaults(true);
+        fileConfig.addDefault("items.ItemName.material", "DIRT");
+        fileConfig.addDefault("items.ItemName.amount", 1);
+        fileConfig.addDefault("items.ItemName.meta.displayname", "&e&lDailyRewards Example Item");
+        List<String> lore = new ArrayList<>();
+        lore.add("&7Default Lore");
+        lore.add("&7Default Lore part 2");
+        fileConfig.addDefault("items.ItemName.meta.lore", lore);
+        fileConfig.addDefault("items.ItemName.meta.unbreakable", false);
+        fileConfig.addDefault("items.ItemName.weekly", false);
+
+        fileConfig.addDefault("items.ItemName2.material", "GRASS");
+        fileConfig.addDefault("items.ItemName2.amount", 1);
+        fileConfig.addDefault("items.ItemName2.meta.displayname", "&b&lDailyRewards Example Item 2");
+        List<String> lore2 = new ArrayList<>();
+        lore2.add("&7Another Example Lore");
+        fileConfig.addDefault("items.ItemName2.meta.lore", lore2);
+        fileConfig.addDefault("items.ItemName2.meta.unbreakable", false);
+        fileConfig.addDefault("items.ItemName2.weekly", true);
     }
 
     //Getter for the Bukkit rewards.yml config
