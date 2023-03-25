@@ -154,6 +154,7 @@ public class CommandsManager implements CommandExecutor {
     }
 
 
+    //Methods for adding/removing time, that are called in the arguments above
     private void addTime(CommandSender sender, Player argPlayer, Integer delay) {
         if (CooldownsManager.getDailyCooldown().asMap().containsKey(argPlayer.getUniqueId()) && delay > 0) {
             long temp = (long) CooldownsManager.getDailyCooldown().asMap().get(argPlayer.getUniqueId()) - System.currentTimeMillis();

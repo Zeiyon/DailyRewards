@@ -48,7 +48,7 @@ public class RewardsMenu extends Menu{
             }
 
             //If the menu is set to cumulative, then it will tell you claimed reward, next rewards & upcoming rewards.
-            if (RewardsManager.cumulative) {
+            if (RewardsManager.isCumulative() == true) {
                     if (!RewardsManager.ifContains(p)) {
                         lore.add("Upcoming Reward");
                     } else if (RewardsManager.getStreak(p) > index) {

@@ -8,11 +8,11 @@ import java.util.UUID;
 
 public class RewardsManager {
     //Check if cumulative rewards is enabled or disabled.
-    public static Boolean cumulative = Main.getPlugin().getConfig().getBoolean("Cumulative_Rewards");
+    private static final Boolean cumulative = Main.getPlugin().getConfig().getBoolean("Cumulative_Rewards");
 
-    public static final HashMap<UUID, Integer> dailyStreak = new HashMap<>();
+    private static final HashMap<UUID, Integer> dailyStreak = new HashMap<>();
 
-    public static final HashMap<UUID, Integer> weeklyStreak = new HashMap<>();
+    private static final HashMap<UUID, Integer> weeklyStreak = new HashMap<>();
 
     public static void claimDailyReward(Player p) {
         if (!CooldownsManager.getDailyCooldown().asMap().containsKey(p.getUniqueId())) {
@@ -37,7 +37,7 @@ public class RewardsManager {
                 int rand = (int) (Math.random() * Main.getPlugin().rewardsLoader.getDailyItemsArray().size());
                 p.getInventory().addItem(Main.getPlugin().rewardsLoader.getDailyItemsArray().get(rand));
             }
-            CooldownsManager.getDailyCooldown().put(p.getUniqueId(), System.currentTimeMillis() + CooldownsManager.amountDaily);
+            CooldownsManager.getDailyCooldown().put(p.getUniqueId(), System.currentTimeMillis() + CooldownsManager.getAmountDaily());
         } else {
             //Cooldown is not up yet.
             p.sendMessage("Must wait " + CooldownsManager.dailyHoursRemaining(p) + " hours & " + CooldownsManager.dailyMinutesRemaining(p) + " minutes");
@@ -46,6 +46,9 @@ public class RewardsManager {
 
     public static Integer getStreak(Player p) {
         return dailyStreak.get(p.getUniqueId());
+    }
+    public static Boolean isCumulative() {
+        return cumulative;
     }
     public static Boolean ifContains(Player p) {
         return dailyStreak.containsKey(p.getUniqueId());

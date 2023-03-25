@@ -13,15 +13,15 @@ import java.util.List;
 
 public class RewardsLoader {
 
-    private final HashMap<String, ItemStack> customItems;
+    private final HashMap<String, ItemStack> dailyItemsMap;
     private final Main main;
 
-    ArrayList<ItemStack> dailyItemsArray = new ArrayList<>();
-    ArrayList<ItemStack> weeklyItemsArray = new ArrayList<>();
+    private ArrayList<ItemStack> dailyItemsArray = new ArrayList<>();
+    private ArrayList<ItemStack> weeklyItemsArray = new ArrayList<>();
 
     public RewardsLoader(Main main) {
         this.main = main;
-        customItems = new HashMap<>();
+        dailyItemsMap = new HashMap<>();
         loadItemStacks();
     }
 
@@ -29,7 +29,7 @@ public class RewardsLoader {
 
         //Add all the ItemStacks in the Config and the custom file to the HashMap
         for (String itemStackName : RewardsFile.get().getConfigurationSection("").getKeys(false)){
-            customItems.put(itemStackName, RewardsFile.get().getItemStack(itemStackName));
+            dailyItemsMap.put(itemStackName, RewardsFile.get().getItemStack(itemStackName));
         }
         for (String itemStackFromConfigName : RewardsFile.get().getConfigurationSection("items").getKeys(false)){
             final ItemStack itemStack = new ItemStack(Material.AIR);
@@ -55,7 +55,7 @@ public class RewardsLoader {
                 itemMeta.setUnbreakable(config.getBoolean(itemPath+".meta.unbreakable"));
                 itemStack.setItemMeta(itemMeta);
             }
-            customItems.put(itemStackFromConfigName, itemStack);
+            dailyItemsMap.put(itemStackFromConfigName, itemStack);
 
             if (config.getBoolean(itemPath + ".weekly")) {
                 weeklyItemsArray.add(itemStack);
@@ -63,9 +63,8 @@ public class RewardsLoader {
         }
     }
 
-    public ItemStack getItem(String name){
-        //Get the ItemStack with the name, if it doesn't find anything, it returns null because of the HashMap
-        return customItems.get(name);
+    public HashMap<String, ItemStack> getDailyItemsMap() {
+        return dailyItemsMap;
     }
 
     public ArrayList<ItemStack> getDailyItemsArray() {
