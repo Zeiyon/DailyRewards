@@ -1,6 +1,5 @@
 package com.zeiyon.dailyrewards.files;
 
-import com.zeiyon.dailyrewards.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,13 +13,11 @@ import java.util.List;
 public class RewardsLoader {
 
     private final HashMap<String, ItemStack> dailyItemsMap;
-    private final Main main;
 
-    private ArrayList<ItemStack> dailyItemsArray = new ArrayList<>();
-    private ArrayList<ItemStack> weeklyItemsArray = new ArrayList<>();
+    private final ArrayList<ItemStack> dailyItemsArray = new ArrayList<>();
+    private final ArrayList<ItemStack> weeklyItemsArray = new ArrayList<>();
 
-    public RewardsLoader(Main main) {
-        this.main = main;
+    public RewardsLoader() {
         dailyItemsMap = new HashMap<>();
         loadItemStacks();
     }
@@ -28,18 +25,18 @@ public class RewardsLoader {
     private void loadItemStacks(){
 
         //Add all the ItemStacks in the Config and the custom file to the HashMap
-        for (String itemStackName : RewardsFile.get().getConfigurationSection("").getKeys(false)){
-            dailyItemsMap.put(itemStackName, RewardsFile.get().getItemStack(itemStackName));
+        for (String itemStackName : RewardsFile.getFileConfig().getConfigurationSection("").getKeys(false)){
+            dailyItemsMap.put(itemStackName, RewardsFile.getFileConfig().getItemStack(itemStackName));
         }
-        for (String itemStackFromConfigName : RewardsFile.get().getConfigurationSection("items").getKeys(false)){
+        for (String itemStackFromConfigName : RewardsFile.getFileConfig().getConfigurationSection("items").getKeys(false)){
             final ItemStack itemStack = new ItemStack(Material.AIR);
-            final FileConfiguration config = RewardsFile.get();
+            final FileConfiguration config = RewardsFile.getFileConfig();
             final String itemPath = "items."+itemStackFromConfigName;
             if(config.getString(itemPath+".material") != null) {
                 itemStack.setType(Material.valueOf(config.getString(itemPath+ ".material")));
             }
             if (config.getInt(itemPath+".amount") != 0 && config.getInt(itemPath+".amount") < 65){
-                itemStack.setAmount(RewardsFile.get().getInt(itemPath+".amount"));
+                itemStack.setAmount(RewardsFile.getFileConfig().getInt(itemPath+".amount"));
             }
             if(config.getConfigurationSection(itemPath+".meta") != null) {
                 final ItemMeta itemMeta = itemStack.getItemMeta();

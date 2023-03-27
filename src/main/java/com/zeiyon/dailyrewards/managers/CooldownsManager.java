@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit;
 public class CooldownsManager {
 
     //Cooldowns for Daily Rewards
-    private static int amountDaily = 86400000;
+    private static final int amountDaily = 86400000;
 
-    private static Cache<UUID, Long> dailyCooldown = CacheBuilder.newBuilder().expireAfterWrite(amountDaily, TimeUnit.MILLISECONDS).build();
+    public static Cache<UUID, Long> dailyCooldown = CacheBuilder.newBuilder().expireAfterWrite(amountDaily, TimeUnit.MILLISECONDS).build();
 
 
     public static Cache getDailyCooldown() {

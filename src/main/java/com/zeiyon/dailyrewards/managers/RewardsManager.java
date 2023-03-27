@@ -1,9 +1,11 @@
 package com.zeiyon.dailyrewards.managers;
 
 import com.zeiyon.dailyrewards.Main;
+import com.zeiyon.dailyrewards.files.DataFile;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class RewardsManager {
@@ -46,6 +48,9 @@ public class RewardsManager {
 
     public static Integer getStreak(Player p) {
         return dailyStreak.get(p.getUniqueId());
+    }
+    public static HashMap getDailyStreak() {
+        return dailyStreak;
     }
     public static Boolean isCumulative() {
         return cumulative;

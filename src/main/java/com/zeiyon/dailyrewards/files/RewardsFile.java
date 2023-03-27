@@ -51,7 +51,7 @@ public class RewardsFile {
     }
 
     //Getter for the Bukkit rewards.yml config
-    public static FileConfiguration get() {
+    public static FileConfiguration getFileConfig() {
         return fileConfig;
     }
 

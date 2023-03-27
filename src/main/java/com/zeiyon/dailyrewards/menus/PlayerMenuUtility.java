@@ -7,7 +7,7 @@ public class PlayerMenuUtility {
     private static Player owner;
 
     public PlayerMenuUtility(Player owner) {
-        this.owner = owner;
+        PlayerMenuUtility.owner = owner;
     }
 
     public static Player getOwner() {
@@ -15,7 +15,7 @@ public class PlayerMenuUtility {
     }
 
     public void setOwner(Player owner) {
-        this.owner = owner;
+        PlayerMenuUtility.owner = owner;
     }
 
 }
