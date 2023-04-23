@@ -1,11 +1,13 @@
 package com.zeiyon.dailyrewards.managers;
 
 import com.zeiyon.dailyrewards.Main;
+import com.zeiyon.dailyrewards.files.MessagesFile;
 import com.zeiyon.dailyrewards.files.RewardsFile;
 import com.zeiyon.dailyrewards.menus.RewardsMenu;
 import com.zeiyon.dailyrewards.menus.MainMenu;
 import com.zeiyon.dailyrewards.menus.WeeklyRewardsMenu;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -29,18 +31,14 @@ public class CommandsManager implements CommandExecutor {
 
             //Help Command Argument
             if (args[0].equalsIgnoreCase("help")) {
-                sender.sendMessage("------------------------[DailyRewards]------------------------");
-                sender.sendMessage("- /dr help - This menu");
-                sender.sendMessage("- /dr claim - Claims the Daily-Reward");
-                sender.sendMessage("- /dr claim weekly - Claims the Weekly-Reward");
-                sender.sendMessage("- /dr rewards - Opens the rewards menu");
+                for(String str : MessagesFile.getFileConfig().getStringList("help-command")) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', str));
+                }
                 if ((sender instanceof Player && sender.hasPermission("dr.admin")) || sender instanceof ConsoleCommandSender) {
                     //Admin-Help Command Argument
-                    sender.sendMessage("------------------------[ADMIN]------------------------");
-                    sender.sendMessage("- /dr addTime {username} {time} - Add time onto a player's dailyreward");
-                    sender.sendMessage("- /dr removeTime {username} {time} - Remove time onto a player's dailyreward");
-                    sender.sendMessage("- /dr reset {username} - Reset a player's dailyreward timer");
-                    sender.sendMessage("- /dr viewtime {username} - View a player's remaining dailyrewards time");
+                    for(String str : MessagesFile.getFileConfig().getStringList("help-command-admin")) {
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', str));
+                    }
                 }
             }
 
@@ -74,13 +72,14 @@ public class CommandsManager implements CommandExecutor {
                 //Add/Remove Time Argument
                 if (args[0].equalsIgnoreCase("addTime") || args[0].equalsIgnoreCase("removeTime")) {
                     if (args.length == 1) {
-                        sender.sendMessage("Please enter a valid user");
-                        sender.sendMessage("usage: /dr addTime/removeTime {user} {amount}");
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', MessagesFile.getFileConfig().getString("dr-addTime-notvalid")));
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', MessagesFile.getFileConfig().getString("dr-addTime-usage")));
                     } else {
                         String potentialPlayer = args[1];
                         if (Bukkit.getPlayerExact(potentialPlayer) == null) {
+
                             sender.sendMessage("\"" + args[1] + "\"" + " is not a valid/online player");
-                            sender.sendMessage("usage: /dr addTime/removeTime {user} {amount}");
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', MessagesFile.getFileConfig().getString("dr-addTime-usage")));
                         } else {
                             Player argPlayer = Bukkit.getPlayer(potentialPlayer);
                             try {
@@ -91,8 +90,8 @@ public class CommandsManager implements CommandExecutor {
                                     removeTime(sender, argPlayer, Integer.parseInt(args[2]) * 1000);
                                 }
                             } catch (final NumberFormatException e) {
-                                sender.sendMessage("Please enter a valid number.");
-                                sender.sendMessage("usage: /dr addTime/removeTime {user} {amount}");
+                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', MessagesFile.getFileConfig().getString("dr-addTime-notvalidnumber")));
+                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', MessagesFile.getFileConfig().getString("dr-addTime-usage")));
                             }
                         }
                     }

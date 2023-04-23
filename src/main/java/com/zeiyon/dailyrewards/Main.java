@@ -1,5 +1,7 @@
 package com.zeiyon.dailyrewards;
 
+import com.zeiyon.dailyrewards.files.DataFile;
+import com.zeiyon.dailyrewards.files.MessagesFile;
 import com.zeiyon.dailyrewards.files.RewardsFile;
 import com.zeiyon.dailyrewards.files.RewardsLoader;
 import com.zeiyon.dailyrewards.managers.CommandsManager;
@@ -20,21 +22,40 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        //Config Setup onEnable
-        getConfig().options().copyDefaults();
-        saveDefaultConfig();
+        //Method for loading all the files
+        loadFiles();
 
-        //Rewards.yml setup onEnable
-        RewardsFile.setup();
-        RewardsFile.get().options().copyDefaults();
-        RewardsFile.save();
-
-        rewardsLoader = new RewardsLoader(this);
-
+        rewardsLoader = new RewardsLoader();
         plugin = this;
 
         getCommand("dailyrewards").setExecutor(new CommandsManager());
         Bukkit.getServer().getPluginManager().registerEvents(new MenuListener(), this);
+    }
+
+    @Override
+    public void onDisable() {
+        DataFile.saveData();
+    }
+
+    private void loadFiles() {
+        //Config Setup
+        getConfig().options().copyDefaults();
+        saveDefaultConfig();
+
+        //Rewards.yml setup
+        RewardsFile.setup();
+        RewardsFile.getFileConfig().options().copyDefaults();
+        RewardsFile.save();
+
+        //Data.yml setup
+        DataFile.setup();
+        DataFile.getFileConfig().options().copyDefaults();
+        DataFile.loadData();
+
+        //Messages.yml setup
+        MessagesFile.setup();
+        MessagesFile.getFileConfig().options().copyDefaults();
+        MessagesFile.save();
     }
 
     public static PlayerMenuUtility getPlayerMenUtility(Player p) {
